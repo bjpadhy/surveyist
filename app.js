@@ -25,7 +25,15 @@ app.use(
 	graphqlHTTP({
 		schema: graphqlSchema,
 		rootValue: graphqlResolver,
-		graphiql: true
+		graphiql: true,
+		customFormatErrorFn(error){
+			if(!error.originalError) {
+				return error;
+			}
+			const data = error.originalError.data;
+			const message = error.message || "An Error Occurred.";
+			return { message: message, data: data };
+		}
 	})
 );
 

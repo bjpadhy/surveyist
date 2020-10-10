@@ -17,15 +17,19 @@ module.exports = buildSchema(`
         username: String!
         surveys: [Survey!]
     }
-    input userCredential {
+    type newUser {
+        _id: ID!
         username: String!
-        password: String!
+    }
+    type AuthData {
+        token: String!
+        userID: String!
     }
     type RootMutation {
-        register(credentials: userCredential): User!
+        register(username: String!, password: String!): newUser!
     }
     type RootQuery {
-        hello: String
+        login(username: String!, password: String!): AuthData!
     }
     schema {
         query: RootQuery

@@ -9,7 +9,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
 
-// Graphql Init
+// GraphQL Init
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
 
@@ -20,12 +20,22 @@ app.use(compression());
 app.use(helmet());
 app.use(cors());
 
+// Init GraphQL and custom format errors
 app.use(
 	"/graphql",
 	graphqlHTTP({
 		schema: graphqlSchema,
 		rootValue: graphqlResolver,
-		graphiql: true
+		graphiql: true,
+		customFormatErrorFn(error){
+			if(!error.originalError) {
+				return error;
+			}
+			const status = error.originalError.code || 500;
+			const data = error.originalError.data;
+			const message = error.message || "An Error Occurred.";
+			return { statusCode: status, message: message, data: data };
+		}
 	})
 );
 

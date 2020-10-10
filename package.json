@@ -1,0 +1,34 @@
+{
+  "name": "surveyist",
+  "version": "1.0.0",
+  "description": "Toddle Backend Task - Survey REST API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "run-dev": "nodemon app.js",
+    "lint": "eslint --fix '**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjpadhy/surveyist.git"
+  },
+  "author": "Biswaranjan Padhy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bjpadhy/surveyist/issues"
+  },
+  "homepage": "https://github.com/bjpadhy/surveyist#readme",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "eslint": "^7.11.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.11.0",
+    "graphql": "^15.3.0",
+    "helmet": "^4.1.1",
+    "mongoose": "^5.10.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

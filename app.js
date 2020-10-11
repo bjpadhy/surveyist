@@ -12,7 +12,7 @@ require("dotenv").config();
 // GraphQL Init
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
-
+const auth = require("./middleware/auth");
 const app = express();
 
 // Middlewares
@@ -21,6 +21,7 @@ app.use(helmet());
 app.use(cors());
 
 // Init GraphQL and custom format errors
+app.use(auth);
 app.use(
 	"/graphql",
 	graphqlHTTP({

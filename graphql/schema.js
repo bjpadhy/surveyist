@@ -15,7 +15,7 @@ module.exports = buildSchema(`
     type User {
         _id: ID!
         username: String!
-        surveys: [Survey!]
+        surveys: [Survey]
     }
     type newUser {
         _id: ID!
@@ -24,6 +24,7 @@ module.exports = buildSchema(`
     type AuthData {
         token: String!
         userID: String!
+        username: String!
     }
     input surveyInputData{
         title: String!

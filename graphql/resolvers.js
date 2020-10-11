@@ -54,11 +54,18 @@ module.exports = {
 			userID: user._id.toString(),
 			username: user.username
 		}, `${process.env.JWT_SECRET}`, { expiresIn: "1h" });
-		return { token: token, userID: user._id.toString() };
+		return { token: token, userID: user._id.toString(), username: user.username };
 	},
 
-	// Create a new user
-	createSurvey: async function ({ surveyInput }){
+	// Create a new survey
+	createSurvey: async function ({ surveyInput }, request){
+		// Check if request is authenticated
+		if (!request.isAuth) {
+			const error = new Error("Unauthenticated! Please login to create a survey.");
+			error.code = 401;
+			throw error;
+		}
+
 		// Required to skip Object prototype attached to args by default
 		const inputData = JSON.parse(JSON.stringify(surveyInput));
 
@@ -75,11 +82,22 @@ module.exports = {
 			error.data = errors;
 			throw error;
 		}
+
+		// Get user to attach to survey
+		const user = await User.findById(request.userID);
+		if (!user) {
+			const error = new Error("Cannot get user at this time. Please try again later.");
+			error.code = 401;
+			throw error;
+		}
 		const survey = new Survey({
 			title: inputData.title,
-			questions: inputData.questions
+			questions: inputData.questions,
+			author: user
 		});
 		const createdSurvey = await survey.save();
+		user.surveys.push(createdSurvey);
+		await user.save();
 		return { ...createdSurvey._doc, _id: createdSurvey._id.toString(), questions: createdSurvey.questions, createdAt: createdSurvey.createdAt.toISOString() };
 	}
 };

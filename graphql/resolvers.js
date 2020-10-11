@@ -31,6 +31,7 @@ module.exports = {
 			password: hashedPw
 		});
 		const createdUser = await user.save();
+		// _id is not a scalar graphql type and hence needs type conversion
 		return { ...createdUser._doc, _id: createdUser._id.toString() };
 	},
 
@@ -54,11 +55,12 @@ module.exports = {
 			userID: user._id.toString(),
 			username: user.username
 		}, `${process.env.JWT_SECRET}`, { expiresIn: "1h" });
+		// _id is not a scalar graphql type and hence needs type conversion
 		return { token: token, userID: user._id.toString(), username: user.username };
 	},
 
 	// Create a new survey
-	createSurvey: async function ({ surveyInput }, request){
+	createSurvey: async function ({ surveyInput }, request) {
 		// Check if request is authenticated
 		if (!request.isAuth) {
 			const error = new Error("Unauthenticated! Please login to create a survey.");
@@ -71,7 +73,7 @@ module.exports = {
 
 		// Error handling
 		const errors = [];
-		if (validator.isEmpty(inputData.title) || !validator.isLength(inputData.title, { min: 1})){
+		if (validator.isEmpty(inputData.title) || !validator.isLength(inputData.title, { min: 1 })) {
 			errors.push({ description: "Title cannot be empty." });
 		}
 		if (inputData.questions.length < 1) {
@@ -93,11 +95,58 @@ module.exports = {
 		const survey = new Survey({
 			title: inputData.title,
 			questions: inputData.questions,
-			author: user
+			author_name: user.username,
+			author_id: user._id
 		});
 		const createdSurvey = await survey.save();
-		user.surveys.push(createdSurvey);
+		user.createdSurveys.push(createdSurvey);
 		await user.save();
+		// _id and timestamp is not a scalar graphql type and hence needs type conversion
 		return { ...createdSurvey._doc, _id: createdSurvey._id.toString(), questions: createdSurvey.questions, createdAt: createdSurvey.createdAt.toISOString() };
+	},
+
+	// Get all surveys for logged-in user
+	getAllSurveys: async function (args, request) {
+		// Check if request is authenticated
+		if (!request.isAuth) {
+			const error = new Error("Unauthenticated! Please login to create a survey.");
+			error.code = 401;
+			throw error;
+		}
+		const surveys = await Survey.find({ author_id: request.userID.toString() });
+		if (!surveys) {
+			const error = new Error("No surveys! Please create a survey to view");
+			throw error;
+		}
+		return {
+			totalSurveys: surveys.length, 			
+			// _id and timestamp is not a scalar graphql type and hence needs type conversion
+			surveys: surveys.map(s => {
+				return {
+					...s._doc,
+					_id: s._id.toString(),
+					createdAt: s.createdAt.toISOString()
+				};
+			})
+		};
+	},
+
+	// Get specific survey
+	getSurvey: async function ({_id}, request) {
+		// Check if request is authenticated
+		if (!request.isAuth) {
+			const error = new Error("Unauthenticated! Please login to create a survey.");
+			error.code = 401;
+			throw error;
+		}
+
+		const survey = await Survey.findById(_id);
+		if (!survey) {
+			const error = new Error("Survey not found.");
+			error.code = 404;
+			throw error;
+		}
+
+		return { ...survey._doc, _id: survey._id.toString(), createdAt: survey.createdAt.toISOString() };
 	}
 };

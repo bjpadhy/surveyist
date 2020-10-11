@@ -3,8 +3,8 @@ const { buildSchema } = require("graphql");
 module.exports = buildSchema(`
     type surveyResponse {
         survey: Survey!
-        yes: Int
-        no: Int
+        yes: Int!
+        no: Int!
     }
     type Response {
         responses: [surveyResponse]
@@ -12,14 +12,19 @@ module.exports = buildSchema(`
     type User {
         _id: ID!
         username: String!
-        surveys: [Survey]
+        createdSurveys: [Survey!]
     }
     type Survey {
         _id: ID!
         title: String!
         questions: [String!]!
-        author: User!
+        author_name: String!
+        author_id: ID!
         createdAt: String!
+    }
+    type allSurveys {
+        surveys: [Survey]
+        totalSurveys: Int!
     }
     type newUser {
         _id: ID!
@@ -40,7 +45,8 @@ module.exports = buildSchema(`
     }
     type RootQuery {
         login(username: String!, password: String!): AuthData!
-        viewSurveys: 
+        getAllSurveys: allSurveys!
+        getSurvey(_id: ID!): Survey!
     }
     schema {
         query: RootQuery

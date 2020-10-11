@@ -8,6 +8,9 @@ const responseSchema = new Schema({
 				type: Schema.Types.ObjectId,
 				ref: "Survey"
 			},
+			totalResponses: {
+				type: Number
+			},
 			yes: {
 				type: Number
 			},

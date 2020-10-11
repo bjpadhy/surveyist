@@ -140,13 +140,14 @@ module.exports = {
 			throw error;
 		}
 
+		// Get survey by Survey ID
 		const survey = await Survey.findById(_id);
 		if (!survey) {
 			const error = new Error("Survey not found.");
 			error.code = 404;
 			throw error;
 		}
-
+		// _id and timestamp is not a scalar graphql type and hence needs type conversion
 		return { ...survey._doc, _id: survey._id.toString(), createdAt: survey.createdAt.toISOString() };
 	}
 };

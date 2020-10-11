@@ -28,8 +28,8 @@ app.use(
 		schema: graphqlSchema,
 		rootValue: graphqlResolver,
 		graphiql: true,
-		customFormatErrorFn(error){
-			if(!error.originalError) {
+		customFormatErrorFn(error) {
+			if (!error.originalError) {
 				return error;
 			}
 			const status = error.originalError.code || 500;
@@ -42,7 +42,7 @@ app.use(
 
 // Server Start
 mongoose.connect(
-	`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@survey-cluster.bkbjh.gcp.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true}
+	`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@survey-cluster.bkbjh.gcp.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true }
 ).then(() => {
 	app.listen(8080 || process.env.PORT, () => console.log("Server running on port 8080!"));
 }).catch(err => console.log(err));

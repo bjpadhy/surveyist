@@ -8,13 +8,6 @@ const surveySchema = new Schema(
 			required: true
 		},
 		questions: [String],
-		responses: [
-			{
-				response: {
-					type: [ Boolean ]
-				}
-			}
-		],
 		author: {
 			type: Schema.Types.ObjectId,
 			ref: "User"

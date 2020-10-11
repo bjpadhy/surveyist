@@ -10,7 +10,7 @@ const userSchema = new Schema({
 		type: String,
 		required: true
 	},
-	surveys: [
+	takenSurveys: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: "Survey"

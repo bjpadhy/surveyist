@@ -1,21 +1,25 @@
 const { buildSchema } = require("graphql");
 
 module.exports = buildSchema(`
+    type surveyResponse {
+        survey: Survey!
+        yes: Int
+        no: Int
+    }
     type Response {
-        response: [Boolean]
+        responses: [surveyResponse]
+    }
+    type User {
+        _id: ID!
+        username: String!
+        surveys: [Survey]
     }
     type Survey {
         _id: ID!
         title: String!
         questions: [String!]!
         author: User!
-        responses: [Response]
         createdAt: String!
-    }
-    type User {
-        _id: ID!
-        username: String!
-        surveys: [Survey]
     }
     type newUser {
         _id: ID!
@@ -36,6 +40,7 @@ module.exports = buildSchema(`
     }
     type RootQuery {
         login(username: String!, password: String!): AuthData!
+        viewSurveys: 
     }
     schema {
         query: RootQuery

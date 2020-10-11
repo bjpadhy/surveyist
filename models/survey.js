@@ -7,10 +7,7 @@ const surveySchema = new Schema(
 			type: String,
 			required: true
 		},
-		questions: {
-			type: [ String ],
-			required: true
-		},
+		questions: [String],
 		responses: [
 			{
 				response: {
@@ -20,8 +17,7 @@ const surveySchema = new Schema(
 		],
 		author: {
 			type: Schema.Types.ObjectId,
-			ref: "User",
-			required: true
+			ref: "User"
 		}
 	},
 	{ timestamps: true }

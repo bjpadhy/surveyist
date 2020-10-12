@@ -25,5 +25,13 @@ module.exports = {
 			"error",
 			"always"
 		]
-	}
+	},
+	"overrides": [
+		{
+			"files": ["*.html", "*.css"],
+			"rules": {
+				"no-unused-expressions": "off"
+			}
+		}
+	]
 };

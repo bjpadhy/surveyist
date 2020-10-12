@@ -2,6 +2,7 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const mongoose = require("mongoose");
+const path = require("path");
 
 // Middleware Imports
 const compression = require("compression");
@@ -19,6 +20,9 @@ const app = express();
 app.use(compression());
 app.use(helmet());
 app.use(cors());
+
+// Serve static documentation files
+app.use("/docs", express.static(path.join(__dirname, "public")));
 
 // Init GraphQL and custom format errors
 app.use(auth);

@@ -7,12 +7,16 @@ module.exports = buildSchema(`
         createdSurveys: [Survey!]
     }
     type surveyResponse {
-        yes: Int
-        no: Int
+        yes: Int!
+        no: Int!
+    }
+    type takerForm {
+        question: String!
+        response: Boolean
     }
     type surveyForm {
         question: String!
-        response: surveyResponse
+        response: surveyResponse!
     }
     type Survey {
         _id: ID!
@@ -35,6 +39,10 @@ module.exports = buildSchema(`
         userID: String!
         username: String!
     }
+    type responseCopy {
+        statusMessage: String!
+        notedResponses: [takerForm]
+    }
     input surveyQuestion {
         question: String!
     }
@@ -45,7 +53,7 @@ module.exports = buildSchema(`
     type RootMutation {
         register(username: String!, password: String!): newUser!
         createSurvey(surveyInput: surveyInputData): Survey!
-        takeSurvey(_id: ID!, answerData: [Boolean!]!): String!
+        takeSurvey(_id: ID!, answerData: [Boolean!]!): responseCopy!
     }
     type RootQuery {
         login(username: String!, password: String!): AuthData!

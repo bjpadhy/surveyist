@@ -112,7 +112,7 @@ module.exports = {
 		const createdSurvey = await survey.save();
 		user.createdSurveys.push(createdSurvey);
 		await user.save();
-		// _id and timestamp is not a scalar graphql type and hence needs type conversion
+		// REQUIRED _id and timestamp is not a scalar graphql type and hence needs type conversion
 		return { ...createdSurvey._doc, _id: createdSurvey._id.toString(), questions: createdSurvey.questions, createdAt: createdSurvey.createdAt.toISOString() };
 	},
 
@@ -130,8 +130,8 @@ module.exports = {
 			throw error;
 		}
 		return {
-			totalSurveys: surveys.length, 			
-			// _id and timestamp is not a scalar graphql type and hence needs type conversion
+			totalSurveys: surveys.length,
+			// REQUIRED _id and timestamp is not a scalar graphql type and hence needs type conversion
 			surveys: surveys.map(s => {
 				return {
 					...s._doc,
@@ -143,7 +143,7 @@ module.exports = {
 	},
 
 	// Get specific survey
-	getSurvey: async function ({_id}, request) {
+	getSurvey: async function ({ _id }, request) {
 		// Check if request is authenticated
 		if (!request.isAuth) {
 			const error = new Error("Unauthenticated! Please login to create a survey.");
@@ -158,13 +158,51 @@ module.exports = {
 			error.code = 404;
 			throw error;
 		}
-		// _id and timestamp is not a scalar graphql type and hence needs type conversion
+		// REQUIRED _id and timestamp is not a scalar graphql type and hence needs type conversion
 		return { ...survey._doc, _id: survey._id.toString(), createdAt: survey.createdAt.toISOString() };
 	},
- 
+
 	// Take a survey
-	takeSurvey: async function (args){
-		console.log(args);
-		return "Your response has been recorded. Thank you for taking the survey.";
+	takeSurvey: async function ({ _id, answerData }, request) {
+		// Check if request is authenticated
+		if (!request.isAuth) {
+			const error = new Error("Unauthenticated! Please login to create a survey.");
+			error.code = 401;
+			throw error;
+		}
+
+		// Get survey by Survey ID
+		const survey = await Survey.findById(_id);
+		if (!survey) {
+			const error = new Error("Survey not found.");
+			error.code = 404;
+			throw error;
+		}
+
+		// Iterating throughh questionnaire and updating response values
+		let answersCopy = [];
+		let answerIndex = 0;
+		survey.questionnaire.forEach(element => {
+			if (answerData[answerIndex] === true)
+				element.response.yes++;
+			else if (answerData[answerIndex] === false)
+				element.response.no++;
+			let tempObj = {
+				question: element.question,
+				response: answerData[answerIndex]
+			};
+			answersCopy.push(tempObj);
+			answerIndex++;
+		});
+
+		// Required since mongoose doesn't track changes to nested array objects
+		survey.markModified("questionnaire");
+		const saved = await survey.save();
+		if (!saved) {
+			const error = new Error("Error occurred while saving the survey.");
+			error.code = 500;
+			throw error;
+		}
+		return { statusMessage: "Your Response has been recorded. Thank you for taking the survey.", notedResponses: answersCopy};
 	}
 };

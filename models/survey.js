@@ -7,9 +7,16 @@ const surveySchema = new Schema(
 			type: String,
 			required: true
 		},
-		questions: {
-			type: [String],
-			required: true
+		questionnaire: {
+			type: [{
+				question: { type: String, required: true },
+				response: {
+					type: {
+						yes: Number,
+						no: Number
+					}
+				}
+			}]
 		},
 		author_name: {
 			type: String,

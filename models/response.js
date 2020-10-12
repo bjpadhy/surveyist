@@ -11,11 +11,8 @@ const responseSchema = new Schema({
 			totalResponses: {
 				type: Number
 			},
-			yes: {
-				type: Number
-			},
-			no: {
-				type: Number
+			answers: {
+				type: [Boolean]
 			}
 		}
 	]

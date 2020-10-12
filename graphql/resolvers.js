@@ -92,11 +92,22 @@ module.exports = {
 			error.code = 401;
 			throw error;
 		}
+		let surveyForm = [];
+		inputData.questions.forEach(element => {
+			let tempObj = {
+				question: element.question,
+				response: {
+					yes: 0,
+					no: 0
+				}
+			};
+			surveyForm.push(tempObj);
+		});
 		const survey = new Survey({
 			title: inputData.title,
-			questions: inputData.questions,
 			author_name: user.username,
-			author_id: user._id
+			author_id: user._id,
+			questionnaire: surveyForm
 		});
 		const createdSurvey = await survey.save();
 		user.createdSurveys.push(createdSurvey);
@@ -106,7 +117,7 @@ module.exports = {
 	},
 
 	// Get all surveys for logged-in user
-	getAllSurveys: async function (args, request) {
+	getAllUserSurveys: async function (args, request) {
 		// Check if request is authenticated
 		if (!request.isAuth) {
 			const error = new Error("Unauthenticated! Please login to create a survey.");
@@ -149,5 +160,11 @@ module.exports = {
 		}
 		// _id and timestamp is not a scalar graphql type and hence needs type conversion
 		return { ...survey._doc, _id: survey._id.toString(), createdAt: survey.createdAt.toISOString() };
+	},
+ 
+	// Take a survey
+	takeSurvey: async function (args){
+		console.log(args);
+		return "Your response has been recorded. Thank you for taking the survey.";
 	}
 };

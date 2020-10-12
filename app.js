@@ -44,9 +44,15 @@ app.use(
 	})
 );
 
+// Handle wildcard redirect all
+app.use("*", (req, res) => {
+	res.redirect("/docs");
+});
+
 // Server Start
+const PORT = process.env.PORT || 8080;
 mongoose.connect(
 	`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@survey-cluster.bkbjh.gcp.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true }
 ).then(() => {
-	app.listen(8080 || process.env.PORT, () => console.log("Server running on port 8080!"));
+	app.listen(PORT, () => console.log(`Server running on port ${PORT}!`));
 }).catch(err => console.log(err));

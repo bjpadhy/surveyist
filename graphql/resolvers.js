@@ -37,6 +37,17 @@ module.exports = {
 
 	// Login a registered user
 	login: async function ({ username, password }) {
+		const errors = [];
+
+		// Error Handling
+		if (validator.isEmpty(username) || validator.isEmpty(password)) {
+			errors.push({ description: "Username or Password cannot be empty." });
+		}
+		if (errors.length > 0) {
+			const error = new Error("Invalid Input.");
+			error.data = errors;
+			throw error;
+		}
 		// Check whether user exists
 		const user = await User.findOne({ username: username });
 		if (!user) {
@@ -55,6 +66,12 @@ module.exports = {
 			userID: user._id.toString(),
 			username: user.username
 		}, `${process.env.JWT_SECRET}`, { expiresIn: "1h" });
+
+		if(!token) {
+			const error = new Error("Token generation error.");
+			error.code = 500;
+			throw error;
+		}
 		// _id is not a scalar graphql type and hence needs type conversion
 		return { token: token, userID: user._id.toString(), username: user.username };
 	},

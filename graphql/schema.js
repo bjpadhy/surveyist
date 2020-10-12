@@ -52,7 +52,7 @@ module.exports = buildSchema(`
     }
     type RootMutation {
         register(username: String!, password: String!): newUser!
-        createSurvey(surveyInput: surveyInputData): Survey!
+        createSurvey(surveyInput: surveyInputData!): Survey!
         takeSurvey(_id: ID!, answerData: [Boolean!]!): responseCopy!
     }
     type RootQuery {
